@@ -9,3 +9,4 @@ class ArcdpsScrollingCombatText(Addon):
         self.Github = "Artenuvielle/GW2-SCT"
         self.Path = "addons\\arcdps"
         self.SaveFileAs = "arcdps_sct.dll"
+        self.Description = """This is an addon for arcdps by deltaconnected (https://www.deltaconnected.com/arcdps/) and adds a highly customizable floating and scrolling combat text beside the users character. Incoming damage is displayed on the left side, outgoing damage is displayed on the right side."""

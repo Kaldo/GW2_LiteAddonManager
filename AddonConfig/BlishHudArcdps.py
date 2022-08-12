@@ -12,6 +12,7 @@ class BlishHudArcdps(Addon):
         self.Github = "blish-hud/arcdps-bhud"
         self.Path = "addons\\arcdps"
         self.UnzippedFileName = "arcdps_bhud.dll"
+        self.Description = """This is a plugin that uses the Arcdps Combat API and exposes some of the data to Blish HUD."""
 
     def download_file(self, ssm, enable_progress_bar):
         url = "https://github.com/% s/releases/latest/download/% s" % (self.Github, self.FileName)

@@ -9,3 +9,4 @@ class ArcdpsSquadReady(Addon):
         self.Github = "cheahjs/arcdps-squad-ready-plugin"
         self.Path = "addons\\arcdps"
         self.SaveFileAs = "arcdps_squad_ready.dll"
+        self.Description = """Plugin for arcdps to play audio files when a ready check has started and completed."""

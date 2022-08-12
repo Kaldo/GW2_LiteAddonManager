@@ -13,6 +13,7 @@ class GW2AddonD3D9Wrapper(Addon):
         self.Github = "gw2-addon-loader/d3d9_wrapper"
         self.Path = "addons"
         self.IsMandatory = True
+        self.Description = """Wrapper for d3d9 API that includes hooking and custom d3d9 loading"""
 
     def download_file(self, ssm, enable_progress_bar):
         url = "https://github.com/% s/releases/latest/download/% s" % (self.Github, self.FileName)

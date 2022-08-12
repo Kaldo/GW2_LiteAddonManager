@@ -31,7 +31,7 @@ class State:
         title += " [yellow blink](update available)[/]"
         self.ssm.console.print(Rule(title))
 
-        table = Table(safe_box=True, box = box.SIMPLE, show_footer = True, expand = False)
+        table = Table(safe_box=True, box = box.SIMPLE, show_footer = True, expand = True)
 
         table.add_column("Index", justify="right", no_wrap=True)
         table.add_column("Name", no_wrap=True)

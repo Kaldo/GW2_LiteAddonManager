@@ -13,6 +13,7 @@ class GW2Radial(Addon):
         self.Path = "addons\\gw2radial"
         self.UnzippedFileName = "gw2addon_gw2radial.dll"
         self.PathInZip = "gw2radial/gw2addon_gw2radial.dll"
+        self.Description = """An ArenaNET-approvedTM addon to show a convenient, customizable radial menu overlay to select a mount, novelty item and more, on the fly, for Guild Wars 2."""
 
     def download_file(self, ssm, enable_progress_bar):
         url = "https://github.com/% s/releases/latest/download/% s" % (self.Github, self.FileName)

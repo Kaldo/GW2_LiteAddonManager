@@ -9,3 +9,4 @@ class ArcdpsFoodReminder(Addon):
         self.Github = "Zerthox/arcdps-food-reminder"
         self.Path = "addons\\arcdps"
         self.SaveFileAs = "arcdps_food_reminder.dll"
+        self.Description = """ArcDPS plugin for Guild Wars 2 allowing tracking of buff food & utility items."""

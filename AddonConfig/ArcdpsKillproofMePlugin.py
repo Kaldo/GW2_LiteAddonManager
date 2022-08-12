@@ -9,3 +9,4 @@ class ArcdpsKillproofMePlugin(Addon):
         self.Github = "knoxfighter/arcdps-killproof.me-plugin"
         self.Path = "addons\\arcdps"
         self.SaveFileAs = "arcdps_killproof_me.dll"
+        self.Description = """A Plugin for arcdps, that is loading killproof.me info and displaying it ingame."""

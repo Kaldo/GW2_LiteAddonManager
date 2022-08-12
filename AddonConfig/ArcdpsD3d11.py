@@ -15,6 +15,10 @@ class ArcdpsD3d11(Addon):
         self.Path = "addons\\arcdps"
         self.FileName = "gw2addon_arcdps.dll"
         self.ChecksumUrl = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll.md5sum"
+        self.Description = """don't be a dick.
+by default, holding alt and shift is required for hotkeys, t is the hotkey for options.
+left click on windows to interact.
+right click on windows to bring up their independent options (if available)."""
 
     def download_file(self, ssm, enable_progress_bar):
         file_path = os.path.join(ssm.root_path, self.Path, self.FileName)

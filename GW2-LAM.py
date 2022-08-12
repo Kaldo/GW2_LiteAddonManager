@@ -1,7 +1,7 @@
 import os
 import sys
 import helper as hp
-from MenuNavigation.StateMachine import SimpleStateMachine
+from MenuNavigation.SimpleStateMachine import SimpleStateMachine
 from UserDataManager import UserDataManager
 from AddonConfig.ArcdpsD3d11 import ArcdpsD3d11
 from AddonConfig.ArcdpsUnofficialExtras import ArcdpsUnofficialExtras

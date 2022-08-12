@@ -5,6 +5,7 @@ from AddonConfig.Addon import AddonStatus
 from rich.progress import Progress
 import subprocess
 import helper as hp
+from rich.panel import Panel
 
 class FirstRunState(State):
     def on_enter(self):
@@ -86,7 +87,8 @@ class MainMenuState(State):
             self.on_enter()
         elif command == "a":
             # Install specific addon
-            return InstallMenuState(self.ssm)
+            InstallMenuState(self.ssm)
+            self.on_enter()
         elif command == "u":
             # Update all pending addons
             pending = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE), self.ssm.all_addons))
@@ -96,19 +98,6 @@ class MainMenuState(State):
                     for addon in pending:
                         addon.install(self.ssm)
                         progress.update(updating_task, advance=1)
-            self.on_enter()
-        elif command == "4":
-            return UninstallMenuState(self.ssm)
-        elif command == "5":
-            c = input("Which addon? ")
-            if c.isdigit():
-                installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
-                    or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
-                addon = next(x for x in installed_addons if str(x.Index) == c)
-                if addon is None:
-                    self.ssm.console.print("Invalid number")
-                else:
-                    addon.open_website()
             self.on_enter()
         elif command == "q":
             return
@@ -130,17 +119,19 @@ class InstallMenuState(State):
         self.print_select_addon_table("Available addons", uninstalled_addons)
 
         # commands
-        self.ssm.console.print("Which addon do you want to install?")
+        self.ssm.console.print("[magenta]number[/]: Select addon")
         self.ssm.console.print("[yellow]q[/yellow]: Back")
         self.await_command()
     
     def on_command_given(self, command):
-        if command == "q":
-            return MainMenuState(self.ssm)
-        elif command.isdigit():
-            self.uninstall_addon(command)
-            self.install_addon(command)
-            return MainMenuState(self.ssm)
+        if command.isdigit():
+            uninstalled_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.NOT_INSTALLED 
+                or x.AddonStatus == AddonStatus.UNREACHABLE), self.ssm.all_addons))
+            addon = next(x for x in uninstalled_addons if str(x.Index) == str(command))
+            AddonDetailsState(self.ssm, addon)
+            return self.on_enter()
+        elif command == "q":
+            return
         else:
             self.ssm.console.print("Unknown command")
             return self.await_command()
@@ -202,9 +193,7 @@ class AddonDetailsState(State):
 
     def on_enter(self):
         hp.clear_screen()
-        self.ssm.console.print("Name: " + self.addon.Name)
-        self.ssm.console.print("Author: " + (self.addon.Author or '-'))
-        self.ssm.console.print("Website: " + (self.addon.get_website_url() or '-'))
+
         status = (self.addon.AddonStatus.name or '-')
         if self.addon.AddonStatus == AddonStatus.INSTALLED:
             status = hp.tag_text(status, "green")
@@ -213,16 +202,23 @@ class AddonDetailsState(State):
         elif self.addon.AddonStatus == AddonStatus.UNREACHABLE:
             status = hp.tag_text(status, "red")
         if self.addon.IsMandatory is True:
-            status += " [red]This is a core, mandatory mod and it should not be uninstalled."
-        self.ssm.console.print("Status: " + status)
-        self.ssm.console.print("Installed version: " + (self.addon.InstalledVersion or '-'))
-        self.ssm.console.print("Available version: " + (self.addon.AvailableVersion or '-'))
-        self.ssm.console.print("\n" + (self.addon.Description or '-') + "\n\n")
-        
+            status += "[red]*\n  This is a core, mandatory mod.[/]"
+
+        desc = '' if self.addon.Description is None else f"\n\n{self.addon.Description}"
+
+        text = f"""Name: [cyan]{self.addon.Name}[/]
+Author: {(self.addon.Author or '-')}
+Website: {(self.addon.get_website_url() or '-')}
+Status: {status}
+Installed version: {(self.addon.InstalledVersion or '-')}
+Available version: {(self.addon.AvailableVersion or '-')}{desc}"""
+        self.ssm.console.print(Panel(text, expand=False))
+        self.ssm.console.print()
+
         # commands
         command_table = self.get_command_grid_table()
-        command_table.add_row("1. Check for updates",   "2. Install")
-        command_table.add_row("3. Open website",        "4. Uninstall")
+        command_table.add_row("c: Check for updates",   "i: Install")
+        command_table.add_row("w: Open website",        "u: Uninstall")
         command_table.add_row("[red]q[/]: Back",        "")
         self.ssm.console.print(command_table)
 
@@ -231,17 +227,24 @@ class AddonDetailsState(State):
     def on_command_given(self, command):
         if command == 'q':
             return
-        elif command == '1':
+        elif command == 'c':
             self.addon.check_for_updates()
-        elif command == "2":
+            self.on_enter()
+        elif command == "i":
             if self.addon.IsMandatory is not True:
                 self.addon.uninstall(self.ssm)
             self.addon.install(self.ssm)
-        elif command == '3':
+            self.on_enter()
+        elif command == 'w':
             self.addon.open_website()
-        elif command == '4':
+            self.on_enter()
+        elif command == 'u':
             if self.addon.IsMandatory is not True:
                 self.addon.uninstall(self.ssm)
+                self.on_enter()
             else:
                 self.ssm.console.print("Cannot uninstall this mod.")
-        self.on_enter()
+                return self.await_command()
+        else:
+            self.ssm.console.print("Unknown command.")
+            return self.await_command()
