@@ -19,6 +19,7 @@ from AddonConfig.ArcdpsScrollingCombatText import ArcdpsScrollingCombatText
 from AddonConfig.GW2AddonLoader import GW2AddonLoader
 from AddonConfig.GW2AddonD3D9Wrapper import GW2AddonD3D9Wrapper
 
+LAM_VERSION = "v0.1"
 
 hp.clear_screen()
 console = hp.setup_console()
@@ -54,4 +55,4 @@ application_path = hp.get_application_path()
 
 # start app
 udm = UserDataManager(application_path, all_addons)
-ssm = SimpleStateMachine(application_path, console, all_addons, udm)
+ssm = SimpleStateMachine(application_path, console, all_addons, udm, LAM_VERSION)
