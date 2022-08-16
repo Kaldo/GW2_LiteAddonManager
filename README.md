@@ -2,12 +2,16 @@
 
 GW2 LAM is an unofficial Lightweight Addon Manager for Guild Wars 2 using a console terminal. With only a few key presses you can check out and install any of the supported addons, get notified if there is a new version available and easily disable or uninstall them at any point.
 
+![image](https://user-images.githubusercontent.com/3905101/184853368-3b8405b6-1893-4b8c-bdb1-c62817439818.png)
+
 # How to use:
 
 1. To eliminate the chance of conflicts or redundant files it is best to remove all existing mods before trying to manage them with LAM
 2. Download the GW2-LAM.exe file from https://github.com/Kaldo/GW2_LiteAddonManager/releases and place it in your main "Guild Wars 2" installation folder, next to "Gw2-64.exe"
 3. Run the tool. If you want it to look nicer, run it in a more modern terminal like Windows Terminal instead of the default windows console
 4. Commands for each screen are listed on that screen, type the number or the letter and press enter to execute it
+
+![image](https://user-images.githubusercontent.com/3905101/184853497-3f181d5b-91e5-42c2-a61a-ec12e16a6dc2.png)
 
 Every mod author has a different way of updating and organizing their mods. Support for new mods must be added manually. Github with tagged releases is the preferred way since then I can easily track versions through github api, but manual implementations are possible too.
 
@@ -33,16 +37,16 @@ GW2 LAM is using https://github.com/gw2-addon-loader/loader-core as a core to en
 
 ## requirements:
 
-developed with python 3.10.6
-python -m pip install -U pip
-pip install tqdm
-pip install requests
-pip install rich
+developed with python 3.10.6  
+python -m pip install -U pip  
+pip install tqdm  
+pip install requests  
+pip install rich  
 
 ## for packaging:
 
-pip install pyinstaller
-pyInstaller main.py --onefile
+pip install pyinstaller  
+pyInstaller main.py --onefile  
 
 ## adding support for other addons
 
