@@ -8,6 +8,7 @@ class AddonStatus(enum.Enum):
     INSTALLED = 2
     PENDING_UPDATE = 3
     UNREACHABLE = 4
+    DISABLED = 5
 
 class Addon:
     """
@@ -42,6 +43,7 @@ class Addon:
             user setting to store the last downloaded version of the addon
         AvailableVersion : str
             filled when we do a request and look up the newest available addon version in the repo
+        IsDisabled : bool
     ...
     Methods:
         install - main wrapper for sub-methods that can be easily overridden
@@ -69,13 +71,14 @@ class Addon:
         self.FileName = None
         self.SaveFileAs = None
         self.RequiresAddons = None
-        self.IsMandatory = None
+        self.IsMandatory = False
         self.Description = None
         # dynamic data
         self.Index = None
         self.AddonStatus = AddonStatus.NOT_INSTALLED
         self.InstalledVersion = None
         self.AvailableVersion = None
+        self.IsDisabled = False
 
     def install(self, ssm, enable_progress_bar = True):
         ssm.console.print("Installing...")
@@ -115,14 +118,15 @@ class Addon:
     def post_install(self, ssm):
         self.AddonStatus = AddonStatus.INSTALLED
         self.InstalledVersion = self.AvailableVersion
+        self.IsDisabled = False
         return True
 
-    def uninstall(self, ssm):
+    def uninstall(self, ssm, disable = False):
         if self.pre_uninstall(ssm) == False:
             return False
         if self.delete_file(ssm) == False:
             return False
-        if self.post_uninstall(ssm) == False:
+        if self.post_uninstall(ssm, disable) == False:
             return False
         self.update_user_data(ssm)
         return True
@@ -143,8 +147,13 @@ class Addon:
             os.remove(file_path)
         return True
     
-    def post_uninstall(self, ssm):
-        self.AddonStatus = AddonStatus.NOT_INSTALLED
+    def post_uninstall(self, ssm, disable = False):
+        if disable == True:
+            self.AddonStatus = AddonStatus.DISABLED
+            self.IsDisabled = True
+        else:
+            self.AddonStatus = AddonStatus.NOT_INSTALLED
+            self.IsDisabled = False
         self.InstalledVersion = None
         return True
 
@@ -166,7 +175,7 @@ class Addon:
         return True
 
     def update_user_data(self, ssm):
-        ssm.udm.set_version(self.ID, self.InstalledVersion)
+        ssm.udm.update_mod_info(self.ID, self.InstalledVersion, self.IsDisabled)
 
     def check_if_file_exists(self):
         pass

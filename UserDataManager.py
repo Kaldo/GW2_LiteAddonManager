@@ -4,6 +4,19 @@ import json
 from AddonConfig.Addon import AddonStatus
 
 class UserDataManager:
+    """
+    Save structure:
+        ModManagerDataJson: {
+            'FirstRun': True / False,
+            'AddonInfo': {
+                # 'ID' : {<addon info>}
+                '1': {
+                    'InstalledVersion': '1.0.0',
+                    'IsDisabled': True
+                }
+            }
+        }
+    """
     def __init__(self, root, all_addons):
         self.root = root
         self.all_addons = all_addons
@@ -26,8 +39,12 @@ class UserDataManager:
         for key, value in self.ModManagerData['AddonInfo'].items():
             addon = next(x for x in self.all_addons if str(x.ID) == key)
             if addon is not None:
-                addon.InstalledVersion = value
-                addon.AddonStatus = AddonStatus.INSTALLED
+                addon.InstalledVersion = value['InstalledVersion']
+                addon.IsDisabled = value['IsDisabled']
+                if addon.IsDisabled is True:
+                    addon.AddonStatus = AddonStatus.DISABLED
+                else:
+                    addon.AddonStatus = AddonStatus.INSTALLED
 
     def save(self):
         self.ModManagerData.update({ 'FirstRun': False })
@@ -35,9 +52,13 @@ class UserDataManager:
         with open(file_path, 'w') as f:
             json.dump(self.ModManagerData, f)
 
-    def set_version(self, id, installedVersion):
-        if installedVersion is None:
+    def update_mod_info(self, id, installedVersion, isDisabled):
+        if installedVersion is None and isDisabled is False:
             self.ModManagerData['AddonInfo'].pop(str(id), None)
         else:
-            self.ModManagerData['AddonInfo'].update({ str(id): str(installedVersion) })
+            addonInfo = {
+                'InstalledVersion': installedVersion,
+                'IsDisabled': (isDisabled or False)
+            }
+            self.ModManagerData['AddonInfo'].update({ str(id): addonInfo })
         self.save()

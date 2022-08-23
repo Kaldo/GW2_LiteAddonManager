@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 addons
 Gw2-64.exe
+dxgi.dll
+addonLoader.dll
+d3d11.dll

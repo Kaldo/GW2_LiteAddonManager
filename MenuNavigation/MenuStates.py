@@ -48,15 +48,17 @@ class MainMenuState(State):
 
         # installed addons
         installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
-            or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
+            or x.AddonStatus == AddonStatus.INSTALLED
+            or x.AddonStatus == AddonStatus.DISABLED), self.ssm.all_addons))
         self.print_select_addon_table("Installed addons", installed_addons)
 
         # commands
         command_table = self.get_command_grid_table()
-        command_table.add_row("[magenta]Index[/]: Select addon",   "",   "")
-        command_table.add_row("[yellow]C[/]: Check for updates",   "[green]A[/]: Add a new addon",   "[cyan]U[/]: Update all pending addons")
+        command_table.add_row("[magenta]Index[/]: Select addon", "", "")
+        command_table.add_row("[yellow]C[/]: Check for updates", "[green]A[/]: Add a new addon", "[cyan]U[/]: Update all pending addons")
         # command_table.add_row("4. Remove addon",        "5. Go to website",     "")
-        command_table.add_row("[red]Q[/]: Quit",        "[green]S[/]: Start GW2",  "[yellow]?[/]: About LAM")
+        command_table.add_row("[cyan]B[/]: Bulk actions", "[yellow]?[/]: About LAM", "")
+        command_table.add_row("[red]Q[/]: Quit",        "[green]S[/]: Start GW2",  "")
         self.ssm.console.print(command_table)
 
         # TODO: remove all addons
@@ -71,7 +73,8 @@ class MainMenuState(State):
     def on_command_given(self, command):
         if command.isdigit():
             installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
-                or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
+                or x.AddonStatus == AddonStatus.INSTALLED
+                or x.AddonStatus == AddonStatus.DISABLED), self.ssm.all_addons))
             try:
                 addon = next(x for x in installed_addons if str(x.Index) == str(command))
             except StopIteration:
@@ -83,7 +86,8 @@ class MainMenuState(State):
             # Check for updates
             with Progress() as progress:
                 installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
-                    or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
+                    or x.AddonStatus == AddonStatus.INSTALLED
+                    or x.AddonStatus == AddonStatus.DISABLED), self.ssm.all_addons))
                 checking_task = progress.add_task("Checking...", total=len(installed_addons))
                 for addon in installed_addons:
                     addon.check_for_updates()
@@ -109,6 +113,9 @@ class MainMenuState(State):
             os.chdir(self.ssm.root_path)
             subprocess.Popen("Gw2-64.exe")
             sys.exit()
+        elif command.lower() == "b":
+            self.ssm.console.print("Unknown command")
+            self.await_command()
         else:
             self.ssm.console.print("Unknown command")
             self.await_command()
@@ -119,7 +126,8 @@ class InstallMenuState(State):
 
         # non installed addons
         uninstalled_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.NOT_INSTALLED 
-            or x.AddonStatus == AddonStatus.UNREACHABLE), self.ssm.all_addons))
+            or x.AddonStatus == AddonStatus.UNREACHABLE
+            or x.AddonStatus == AddonStatus.DISABLED), self.ssm.all_addons))
         self.print_select_addon_table("Available addons", uninstalled_addons)
 
         # commands
@@ -130,7 +138,8 @@ class InstallMenuState(State):
     def on_command_given(self, command):
         if command.isdigit():
             uninstalled_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.NOT_INSTALLED 
-                or x.AddonStatus == AddonStatus.UNREACHABLE), self.ssm.all_addons))
+                or x.AddonStatus == AddonStatus.UNREACHABLE
+                or x.AddonStatus == AddonStatus.DISABLED), self.ssm.all_addons))
             try:
                 addon = next(x for x in uninstalled_addons if str(x.Index) == str(command))
             except StopIteration:
@@ -143,39 +152,6 @@ class InstallMenuState(State):
         else:
             self.ssm.console.print("Unknown command")
             return self.await_command()
-
-class UninstallMenuState(State):
-    def on_enter(self):
-        hp.clear_screen()
-
-        # installed addons
-        installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
-            or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
-        self.print_select_addon_table("Installed addons", installed_addons)
-        
-        # commands
-        self.ssm.console.print("Which addon do you want to remove?")
-        self.ssm.console.print("[yellow]q[/yellow]: Back")
-        self.await_command()
-    
-    def on_command_given(self, command):
-        if command == "q":
-            return MainMenuState(self.ssm)
-        elif command.isdigit():
-            return self.uninstall_addon(command)
-        else:
-            self.ssm.console.print("Unknown command")
-            return self.await_command()
-
-    def uninstall_addon(self, idx):
-        installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
-            or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
-        addon = next(x for x in installed_addons if str(x.Index) == idx)
-        if addon is None:
-            self.ssm.console.print("Invalid number")
-            self.await_command()
-        addon.uninstall(self.ssm)
-        return MainMenuState(self.ssm)
 
 class AddonDetailsState(State):
     def __init__(self, ssm, addon):
@@ -209,7 +185,7 @@ Available version: {(self.addon.AvailableVersion or '-')}{desc}"""
         # commands
         command_table = self.get_command_grid_table()
         command_table.add_row("[yellow]C[/]: Check for updates",   "[green]I[/]: Install", "[magenta]U[/]: Uninstall")
-        command_table.add_row("[red]Q[/]: Back", "[cyan]W[/]: Open website", "")
+        command_table.add_row("[red]Q[/]: Back", "[cyan]W[/]: Open website", "[magenta]D[/]: Disable")
         self.ssm.console.print(command_table)
 
         self.await_command()
@@ -235,6 +211,59 @@ Available version: {(self.addon.AvailableVersion or '-')}{desc}"""
             else:
                 self.ssm.console.print("Cannot uninstall this mod.")
                 return self.await_command()
+        elif command.lower() == 'd':
+            if self.addon.IsMandatory is not True:
+                self.addon.uninstall(self.ssm, disable=True)
+                self.on_enter()
+            else:
+                self.ssm.console.print("Cannot disable this mod.")
+                return self.await_command()
+        else:
+            self.ssm.console.print("Unknown command.")
+            return self.await_command()
+
+class BulkActionsState(State):
+    def __init__(self, ssm):
+        super(BulkActionsState, self).__init__(ssm)
+    
+    def on_enter(self):
+        hp.clear_screen()
+        # installed addons
+        installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
+            or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
+        self.print_select_addon_table("Installed addons", installed_addons)
+
+        # commands
+        command_table = self.get_command_grid_table()
+        command_table.add_row("[magenta]Index[/]: Select addon", "", "")
+        command_table.add_row("[green]E[/]: Enable all disabled addons", "[blue]D[/]: Disable all enabled addons")
+        command_table.add_row("[magenta]R[/]: Remove all addons", "[blue]U[/]: Update all pending addons")
+        command_table.add_row("[red]Q[/]: Back")
+        self.ssm.console.print(command_table)
+        self.await_command()
+
+    def on_command_given(self, command):
+        if command.isdigit():
+            installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
+                or x.AddonStatus == AddonStatus.INSTALLED), self.ssm.all_addons))
+            try:
+                addon = next(x for x in installed_addons if str(x.Index) == str(command))
+            except StopIteration:
+                self.ssm.console.print("Invalid number.")
+                return self.await_command()
+            AddonDetailsState(self.ssm, addon)
+            self.on_enter()
+        if command.lower() == 'q':
+            return
+        elif command.lower() == 'e':
+            # TODO: enable all disabled
+            return
+        elif command.lower() == 'd':
+            # TODO: disable all enabled, except mandatory
+            return
+        elif command.lower() == 'u':
+            # TODO: uninstall all installed, except mandatory
+            return
         else:
             self.ssm.console.print("Unknown command.")
             return self.await_command()
