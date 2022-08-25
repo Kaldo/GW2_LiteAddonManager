@@ -4,7 +4,7 @@ from rich.rule import Rule
 from rich import box
 from AddonConfig.Addon import AddonStatus
 from rich.text import Text
-import helper as hp
+import Classes.helper as hp
 
 class State:
     def __init__(self, ssm):

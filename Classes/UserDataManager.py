@@ -1,5 +1,5 @@
 import os
-import helper as hp
+import Classes.helper as hp
 import json
 from AddonConfig.Addon import AddonStatus
 

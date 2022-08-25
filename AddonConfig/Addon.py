@@ -1,6 +1,6 @@
 import os
 import enum
-import helper as hp
+import Classes.helper as hp
 import webbrowser
 
 class AddonStatus(enum.Enum):
@@ -23,12 +23,18 @@ class Addon:
             name of the author/owner/maintainer of the addon
         Github : str
             identifier for the github repository, user/reponame
+        Website : str
+            if github not used, this will be displayed instead
+        DownloadUrl : str
+            if github is not used, this is the source url to download the file
         Path : str
             relative path to the folder where the file should be stored
         FileName : str
             name of the file that will be downloaded and put into Path
         SaveFileAs : str
             if provided, the file will be renamed to this during the save
+        RequiresAddons: array of ints
+            if provided, the addons with these IDs are required for this addon to work properly
         IsMandatory : bool
             if True, addon will be automatically installed at first run and cannot be removed
         Description : str
@@ -66,7 +72,6 @@ class Addon:
         self.Github = None
         self.Website = None
         self.DownloadUrl = None
-        self.ApiUrl = None
         self.Path = None
         self.FileName = None
         self.SaveFileAs = None
@@ -157,7 +162,17 @@ class Addon:
         self.InstalledVersion = None
         return True
 
-    def check_for_updates(self):
+    def uninstall(self, ssm, disable = False):
+        if self.pre_uninstall(ssm) == False:
+            return False
+        if self.delete_file(ssm) == False:
+            return False
+        if self.post_uninstall(ssm, disable) == False:
+            return False
+        self.update_user_data(ssm)
+        return True
+
+    def update_version_info(self):
         if self.AvailableVersion is not None:
             return True
 
@@ -169,6 +184,32 @@ class Addon:
         self.AvailableVersion = github_info['version']
 
         if self.AvailableVersion == self.InstalledVersion:
+            self.AddonStatus = AddonStatus.INSTALLED
+        elif self.InstalledVersion is not None:
+            self.AddonStatus = AddonStatus.PENDING_UPDATE
+        return True
+
+    def check_for_updates(self):
+        self.update_version_info()
+        if self.post_update_version_info() == False:
+            return False
+        return True
+
+    def update_version_info(self):
+        if self.AvailableVersion is not None:
+            return True
+        github_info = hp.get_github_latest_release_info(self.Github)
+        if github_info == None:
+            self.AvailableVersion = AddonStatus.UNREACHABLE.name
+            return False
+        self.FileName = github_info['file_name']
+        self.AvailableVersion = github_info['version']
+        return True
+
+    def post_update_version_info(self):
+        if self.AvailableVersion is None:
+            self.AvailableVersion = AddonStatus.UNREACHABLE.name
+        elif self.AvailableVersion == self.InstalledVersion:
             self.AddonStatus = AddonStatus.INSTALLED
         elif self.InstalledVersion is not None:
             self.AddonStatus = AddonStatus.PENDING_UPDATE

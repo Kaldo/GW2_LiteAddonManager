@@ -1,6 +1,6 @@
 import os
 import zipfile
-import helper as hp
+import Classes.helper as hp
 from .Addon import Addon
 from .Addon import AddonStatus
 

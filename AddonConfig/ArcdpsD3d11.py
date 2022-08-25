@@ -1,6 +1,6 @@
 from .Addon import Addon
 from .Addon import AddonStatus
-import helper as hp
+import Classes.helper as hp
 import os
 import requests
 
@@ -14,7 +14,6 @@ class ArcdpsD3d11(Addon):
         self.DownloadUrl = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll"
         self.Path = "addons\\arcdps"
         self.FileName = "gw2addon_arcdps.dll"
-        self.ChecksumUrl = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll.md5sum"
         self.Description = """don't be a dick.
 by default, holding alt and shift is required for hotkeys, t is the hotkey for options.
 left click on windows to interact.
@@ -25,12 +24,13 @@ right click on windows to bring up their independent options (if available)."""
         hp.download_file(self.DownloadUrl, file_path, enable_progress_bar)
         return True
 
-    def check_for_updates(self):
+    def update_version_info(self):
         if self.AvailableVersion is not None:
             return True
-        with requests.get(self.ChecksumUrl) as r:
+        checksum_url = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll.md5sum"
+        with requests.get(checksum_url) as r:
             if r.status_code == 200:
                 self.AvailableVersion = r.text.split(' ', 1)[0]
                 return True
-        self.AvailableVersion = AddonStatus.UNREACHABLE.name
+        self.AvailableVersion = None
         return False

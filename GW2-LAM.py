@@ -1,8 +1,8 @@
 import os
 import sys
-import helper as hp
-from MenuNavigation.SimpleStateMachine import SimpleStateMachine
-from UserDataManager import UserDataManager
+import Classes.helper as hp
+from Classes.SimpleStateMachine import SimpleStateMachine
+from Classes.UserDataManager import UserDataManager
 from AddonConfig.ArcdpsD3d11 import ArcdpsD3d11
 from AddonConfig.ArcdpsUnofficialExtras import ArcdpsUnofficialExtras
 from AddonConfig.ArcdpsSquadReady import ArcdpsSquadReady
@@ -51,7 +51,12 @@ all_addons = [
 # TODO: first time config step, check if new version is available
 
 # get current exe location
-application_path = hp.get_application_path()
+def get_application_path():
+    if getattr(sys, 'frozen', False):
+        return sys.executable.rsplit('\\', 1)[0]
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
+application_path = get_application_path()
 
 # start app
 udm = UserDataManager(application_path, all_addons)

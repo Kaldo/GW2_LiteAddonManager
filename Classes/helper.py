@@ -57,12 +57,6 @@ def get_github_version(github_id):
                 return json_data['tag_name']
     return None
 
-def get_application_path():
-    if getattr(sys, 'frozen', False):
-        return sys.executable.rsplit('\\', 1)[0]
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
-
 def clear_screen():
     if system == 'Windows':
         os.system('cls')

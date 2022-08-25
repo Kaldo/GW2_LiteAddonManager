@@ -4,7 +4,7 @@ from .State import State
 from AddonConfig.Addon import AddonStatus
 from rich.progress import Progress
 import subprocess
-import helper as hp
+import Classes.helper as hp
 from rich.panel import Panel
 
 class FirstRunState(State):

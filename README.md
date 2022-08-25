@@ -41,15 +41,19 @@ developed with python 3.10.6
 python -m pip install -U pip  
 pip install tqdm  
 pip install requests  
-pip install rich  
+pip install rich
 
 ## for packaging:
 
 pip install pyinstaller  
-pyInstaller main.py --onefile  
+pyInstaller main.py --onefile
 
 ## adding support for other addons
 
 I will (eventually) accept requests and pull requests to add support for other github-based mods after I thoroughly test them myself. Only addons that have existed and have been maintained for a while though.
 
 Non-github mods that require more customized implementation might take a bit longer since they are a bit riskier and harder to maintain - checking versions, unzipping files, resolving multiple files is doable but gets a bit more complicated.
+
+## Credits
+
+Big thanks to AcidWeb of CurseBreaker (https://github.com/AcidWeb/CurseBreaker) for inspiration.
