@@ -19,7 +19,7 @@ from AddonConfig.ArcdpsScrollingCombatText import ArcdpsScrollingCombatText
 from AddonConfig.GW2AddonLoader import GW2AddonLoader
 from AddonConfig.GW2AddonD3D9Wrapper import GW2AddonD3D9Wrapper
 
-LAM_VERSION = "v0.1"
+LAM_VERSION = "v0.2"
 
 hp.clear_screen()
 console = hp.setup_console()

@@ -26,9 +26,7 @@ class State:
         self.print_select_addon_table("Current addons", self.ssm.all_addons)
 
     def print_select_addon_table(self, title, addons):
-        version = "v0.1"
-        title = f"[bold green]GW2 Lite Addon Manager[/bold green] [bold red]{version}[/bold red]"
-        title += " [yellow blink](update available)[/]"
+        title = f"[bold green]GW2 Lite Addon Manager[/bold green] {self.ssm.VersionText}"
         self.ssm.console.print(Rule(title))
 
         table = Table(safe_box=True, box = box.SIMPLE, show_footer = True, expand = True)

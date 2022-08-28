@@ -281,14 +281,14 @@ class SelfUpdaterState(State):
         ri = hp.get_github_latest_release_info("Kaldo/GW2_LiteAddonManager")
         if ri is None:
             self.ssm.console.print("Could not fetch update info. Please consider manually checking if a new version is available.")
-            self.ssm.VersionText = f"[red]{self.ssm.LAM_VERSION}[/] [yellow](update unavailable)[/]"
+            self.ssm.VersionText = f"[red]{self.ssm.LAM_VERSION}[/] [red](update unavailable)[/]"
             input("Press enter to continue...")
             return
         if ri['version'] == self.ssm.LAM_VERSION:
-            self.ssm.VersionText = f"[red]{self.ssm.LAM_VERSION}[/]"
+            self.ssm.VersionText = f"[white]{self.ssm.LAM_VERSION}[/]"
             return
         else:
-            self.ssm.VersionText = f"[red]{self.ssm.LAM_VERSION}[/] [yellow](update available)[/]"
+            self.ssm.VersionText = f"[yellow]{self.ssm.LAM_VERSION}[/] [yellow](update available)[/]"
             self.ssm.console.print("A new update for GW2 LAM is available. Do you want it to install automatically now?")
             c = input("yes / no ?")
             if c.lower() == "yes":
