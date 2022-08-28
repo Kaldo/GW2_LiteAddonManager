@@ -11,9 +11,10 @@ class FirstRunState(State):
     def on_enter(self):
         hp.clear_screen()
         self.ssm.console.print("Welcome!\n")
-        self.ssm.console.print("Disclaimer, still in beta, use at own risk, etc.")
-        self.ssm.console.print("File must be placed in the root Guild Wars 2 folder.")
-        self.ssm.console.print("If you understand and accept the risks, type [green]'yes'[/] and press enter to continue.\n")
+        self.ssm.console.print("Disclaimer - tools is still in early development. Use at own risk, create backups of your addons if you don't want to accidentally lose some settings.")
+        self.ssm.console.print("This executable file must be placed in the root Guild Wars 2 folder, next to the Gw2-64.exe file.")
+        self.ssm.console.print("If you manually change files in the folders LAM will not know about it. Either make changes through the manager only, or make sure to remove/add addons to LAM as well.")
+        self.ssm.console.print("\nIf you understand and accept the risks, type [green]'yes'[/] and press enter to continue.\n")
         c = input("I understand and accept all risks: ")
         if c.lower() != "yes":
             sys.exit()
@@ -116,6 +117,9 @@ class MainMenuState(State):
         elif command.lower() == "b":
             self.ssm.console.print("Unknown command")
             self.await_command()
+        elif command == "?":
+            AboutLamState(self.ssm)
+            self.on_enter()
         else:
             self.ssm.console.print("Unknown command")
             self.await_command()
@@ -290,3 +294,38 @@ class SelfUpdaterState(State):
             if c.lower() == "yes":
                 # automatic install process
                 self.ssm.console.print("Installing update... \nGW2 LAM will restart automatically when it is done.")
+
+class AboutLamState(State):
+    def __init__(self, ssm, addon):
+        self.addon = addon
+        super(AboutLamState, self).__init__(ssm)
+
+    def on_enter(self):
+        hp.clear_screen()
+
+        text = f"""Name: [cyan]GW2 Lite Addon Manager[/]
+Author: Kaldo
+Website: https://github.com/Kaldo/GW2_LiteAddonManager
+Installed version: {(self.ssm.LAM_VERSION or '-')}
+Available version: {(self.addon.AvailableVersion or '-')}
+
+GW2 LAM is an unofficial Lightweight Addon Manager for Guild Wars 2 using a console terminal. With only a few key presses you can check out and install any of the supported addons, get notified if there is a new version available and easily disable or uninstall them at any point."""
+        self.ssm.console.print(Panel(text, expand=False))
+        self.ssm.console.print()
+
+        # commands
+        command_table = self.get_command_grid_table()
+        command_table.add_row("[red]Q[/]: Back", "[cyan]W[/]: Open website")
+        self.ssm.console.print(command_table)
+
+        self.await_command()
+
+    def on_command_given(self, command):
+        if command.lower() == 'q':
+            return
+        elif command.lower() == 'w':
+            self.addon.open_website()
+            self.on_enter()
+        else:
+            self.ssm.console.print("Unknown command.")
+            return self.await_command()                
