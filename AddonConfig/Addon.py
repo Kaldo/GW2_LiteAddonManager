@@ -53,16 +53,20 @@ class Addon:
     ...
     Methods:
         install - main wrapper for sub-methods that can be easily overridden
-        pre_install
-        download_file
-        post_install
+        pre_install - validation checks
+        download_file - actual file download and unpacking
+        post_install - update user data
         uninstall - main wrapper for sub-methods that can be easily overridden
-        pre_uninstall
-        delete_file
-        post_uninstall
-        check_for_updates
+        pre_uninstall - validation checks
+        delete_file - actual file deletion
+        post_uninstall - update user data
+        check_for_updates - main wrapper for sub-methods that can be easily overriden
+        update_version_info - actual update of version info by querying the remote services
+        post_update_version_info - update addon status
         update_user_data
         check_if_file_exists
+        get_website_url
+        open_website
     """
     def __init__(self):
         # configuration constants
@@ -235,6 +239,3 @@ class Addon:
         browser = webbrowser.get()
         browser.open_new(website_url)
         return True
-
-    def open_info_page(self):
-        pass

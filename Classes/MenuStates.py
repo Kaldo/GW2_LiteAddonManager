@@ -6,6 +6,7 @@ from rich.progress import Progress
 import subprocess
 import Classes.helper as hp
 from rich.panel import Panel
+import webbrowser
 
 class FirstRunState(State):
     def on_enter(self):
@@ -289,11 +290,15 @@ class SelfUpdaterState(State):
             return
         else:
             self.ssm.VersionText = f"[yellow]{self.ssm.LAM_VERSION}[/] [yellow](update available)[/]"
-            self.ssm.console.print("A new update for GW2 LAM is available. Do you want it to install automatically now?")
+            self.ssm.console.print("A new update for GW2 LAM is available. Do you want to open the website now?")
             c = input("yes / no ?")
             if c.lower() == "yes":
                 # automatic install process
-                self.ssm.console.print("Installing update... \nGW2 LAM will restart automatically when it is done.")
+                # self.ssm.console.print("Installing update... \nGW2 LAM will restart automatically when it is done.")
+                browser = webbrowser.get()
+                browser.open_new("https://github.com/Kaldo/GW2_LiteAddonManager")
+                sys.exit()
+            return
 
 class AboutLamState(State):
     def __init__(self, ssm, addon):

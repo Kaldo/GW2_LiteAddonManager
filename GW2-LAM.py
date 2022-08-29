@@ -19,17 +19,7 @@ from AddonConfig.ArcdpsScrollingCombatText import ArcdpsScrollingCombatText
 from AddonConfig.GW2AddonLoader import GW2AddonLoader
 from AddonConfig.GW2AddonD3D9Wrapper import GW2AddonD3D9Wrapper
 
-LAM_VERSION = "v0.2"
-
-hp.clear_screen()
-console = hp.setup_console()
-
-# Check if executable is in good location
-if not os.path.isdir('bin64') or not os.path.exists('Gw2-64.exe'):
-    console.print('[bold red]This executable should be placed in the same directory where Gw2-64.exe is located.[/bold red]\n')    
-    c = input("Press enter to continue...")
-    sys.exit()
-
+LAM_VERSION = "v0.3"
 all_addons = [
     GW2AddonLoader(), # 14
     GW2AddonD3D9Wrapper(), # 15
@@ -48,16 +38,27 @@ all_addons = [
     GW2Radial(), # 8
 ]
 
-# TODO: first time config step, check if new version is available
+hp.clear_screen()
+console = hp.setup_console()
+try:
+    # Check if executable is in good location
+    if not os.path.isdir('bin64') or not os.path.exists('Gw2-64.exe'):
+        console.print('[bold red]This executable should be placed in the same directory where Gw2-64.exe is located.[/]\n')    
+        c = input("Press enter to continue...")
+        sys.exit()
 
-# get current exe location
-def get_application_path():
-    if getattr(sys, 'frozen', False):
-        return sys.executable.rsplit('\\', 1)[0]
-    else:
-        return os.path.dirname(os.path.abspath(__file__))
-application_path = get_application_path()
+    # get current exe location
+    def get_application_path():
+        if getattr(sys, 'frozen', False):
+            return sys.executable.rsplit('\\', 1)[0]
+        else:
+            return os.path.dirname(os.path.abspath(__file__))
+    application_path = get_application_path()
 
-# start app
-udm = UserDataManager(application_path, all_addons)
-ssm = SimpleStateMachine(application_path, console, all_addons, udm, LAM_VERSION)
+    # start app
+    udm = UserDataManager(application_path, all_addons)
+    ssm = SimpleStateMachine(application_path, console, all_addons, udm, LAM_VERSION)
+except Exception as e:
+    print(e)
+    console.print('\n[bold red]Unhandled exception, please report the issue.[/]\n')    
+    c = input("Press enter to exit...")
