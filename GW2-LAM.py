@@ -15,15 +15,17 @@ from AddonConfig.ArcdpsFoodReminder import ArcdpsFoodReminder
 from AddonConfig.ArcdpsHealingStats import ArcdpsHealingStats
 from AddonConfig.ArcdpsKillproofMePlugin import ArcdpsKillproofMePlugin
 from AddonConfig.ArcdpsScrollingCombatText import ArcdpsScrollingCombatText
+from AddonConfig.ArcdpsSquadRoleTracker import ArcdpsSquadRoleTracker
 # from AddonConfig.ArcdpsUploader import ArcdpsUploader
 from AddonConfig.GW2AddonLoader import GW2AddonLoader
 from AddonConfig.GW2AddonD3D9Wrapper import GW2AddonD3D9Wrapper
 
-LAM_VERSION = "v0.3"
+LAM_VERSION = "v0.4"
 all_addons = [
     GW2AddonLoader(), # 14
     GW2AddonD3D9Wrapper(), # 15
     ArcdpsD3d11(), # 1
+    ArcdpsUnofficialExtras(), # 2
     ArcdpsBoonTable(), # 4
     ArcdpsClears(), # 6
     ArcdpsFoodReminder(), # 9
@@ -32,7 +34,7 @@ all_addons = [
     ArcdpsMechanicsLog(), # 7
     ArcdpsScrollingCombatText(), #12
     ArcdpsSquadReady(), # 3
-    ArcdpsUnofficialExtras(), # 2
+    ArcdpsSquadRoleTracker(), # 16
     # ArcdpsUploader(), # 13
     BlishHudArcdps(), # 5
     GW2Radial(), # 8

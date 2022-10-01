@@ -70,6 +70,15 @@ class MainMenuState(State):
         # TODO: about/help section
         # TODO: reinstall all installed addons
         
+        try:
+            addon = next(x for x in installed_addons if x.AvailableVersion is None)
+            if addon is not None:
+                # automatically check for updates
+                self.check_for_updates()
+                self.on_enter()
+                return
+        except StopIteration:
+            pass
         self.await_command()
 
     def on_command_given(self, command):
@@ -86,14 +95,7 @@ class MainMenuState(State):
             self.on_enter()
         elif command.lower() == "c":
             # Check for updates
-            with Progress() as progress:
-                installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
-                    or x.AddonStatus == AddonStatus.INSTALLED
-                    or x.AddonStatus == AddonStatus.DISABLED), self.ssm.all_addons))
-                checking_task = progress.add_task("Checking...", total=len(installed_addons))
-                for addon in installed_addons:
-                    addon.check_for_updates()
-                    progress.update(checking_task, advance=1)
+            self.check_for_updates()
             self.on_enter()
         elif command.lower() == "a":
             # Install specific addon
@@ -124,6 +126,16 @@ class MainMenuState(State):
         else:
             self.ssm.console.print("Unknown command")
             self.await_command()
+
+    def check_for_updates(self):
+        with Progress() as progress:
+            installed_addons = list(filter(lambda x: (x.AddonStatus == AddonStatus.PENDING_UPDATE 
+                or x.AddonStatus == AddonStatus.INSTALLED
+                or x.AddonStatus == AddonStatus.DISABLED), self.ssm.all_addons))
+            checking_task = progress.add_task("Checking...", total=len(installed_addons))
+            for addon in installed_addons:
+                addon.check_for_updates()
+                progress.update(checking_task, advance=1)
 
 class InstallMenuState(State):
     def on_enter(self):
