@@ -11,6 +11,7 @@ class SimpleStateMachine(object):
         self.udm = udm
         self.LAM_VERSION = LAM_VERSION
         self.VersionText = None
+        self.AvailableLamVersion = None
 
         # check for updates
         SelfUpdaterState(self)

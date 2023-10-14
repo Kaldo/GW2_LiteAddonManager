@@ -68,7 +68,7 @@ class State:
             elif addon.AddonStatus == AddonStatus.PENDING_UPDATE:
                 cuVersion = hp.tag_text(cuVersion, "yellow")
             elif addon.AddonStatus == AddonStatus.DISABLED:
-                cuVersion = hp.tag_text(cuVersion, "magenta")
+                cuVersion = hp.tag_text(str(addon.InstalledVersion)[0:10], "magenta")
 
             # format av. version
             avVersion = "-"

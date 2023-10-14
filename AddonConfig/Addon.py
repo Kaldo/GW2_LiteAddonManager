@@ -163,7 +163,7 @@ class Addon:
         else:
             self.AddonStatus = AddonStatus.NOT_INSTALLED
             self.IsDisabled = False
-        self.InstalledVersion = None
+        # self.InstalledVersion = None
         return True
 
     def uninstall(self, ssm, disable = False):
@@ -187,7 +187,9 @@ class Addon:
         self.FileName = github_info['file_name']
         self.AvailableVersion = github_info['version']
 
-        if self.AvailableVersion == self.InstalledVersion:
+        if self.IsDisabled == True:
+            self.AddonStatus = AddonStatus.DISABLED
+        elif self.AvailableVersion == self.InstalledVersion:
             self.AddonStatus = AddonStatus.INSTALLED
         elif self.InstalledVersion is not None:
             self.AddonStatus = AddonStatus.PENDING_UPDATE
@@ -213,6 +215,8 @@ class Addon:
     def post_update_version_info(self):
         if self.AvailableVersion is None:
             self.AvailableVersion = AddonStatus.UNREACHABLE.name
+        elif self.IsDisabled == True:
+            self.AddonStatus = AddonStatus.DISABLED
         elif self.AvailableVersion == self.InstalledVersion:
             self.AddonStatus = AddonStatus.INSTALLED
         elif self.InstalledVersion is not None:

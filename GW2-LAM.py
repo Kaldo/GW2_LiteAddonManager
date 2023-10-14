@@ -20,7 +20,7 @@ from AddonConfig.ArcdpsSquadRoleTracker import ArcdpsSquadRoleTracker
 from AddonConfig.GW2AddonLoader import GW2AddonLoader
 from AddonConfig.GW2AddonD3D9Wrapper import GW2AddonD3D9Wrapper
 
-LAM_VERSION = "v0.4"
+LAM_VERSION = "v0.5"
 all_addons = [
     GW2AddonLoader(), # 14
     GW2AddonD3D9Wrapper(), # 15

@@ -179,7 +179,9 @@ class AddonDetailsState(State):
         hp.clear_screen()
 
         status = (self.addon.AddonStatus.name or '-')
-        if self.addon.AddonStatus == AddonStatus.INSTALLED:
+        if self.addon.IsDisabled is True:
+            status = hp.tag_text(status, "magenta")
+        elif self.addon.AddonStatus == AddonStatus.INSTALLED:
             status = hp.tag_text(status, "green")
         elif self.addon.AddonStatus == AddonStatus.PENDING_UPDATE:
             status = hp.tag_text(status, "yellow")
@@ -298,9 +300,11 @@ class SelfUpdaterState(State):
             input("Press enter to continue...")
             return
         if ri['version'] == self.ssm.LAM_VERSION:
+            self.ssm.AvailableLamVersion = ri['version']
             self.ssm.VersionText = f"[white]{self.ssm.LAM_VERSION}[/]"
             return
         else:
+            self.ssm.AvailableLamVersion = ri['version']
             self.ssm.VersionText = f"[yellow]{self.ssm.LAM_VERSION}[/] [yellow](update available)[/]"
             self.ssm.console.print("A new update for GW2 LAM is available. Do you want to open the website now?")
             c = input("yes / no ?")
@@ -313,8 +317,7 @@ class SelfUpdaterState(State):
             return
 
 class AboutLamState(State):
-    def __init__(self, ssm, addon):
-        self.addon = addon
+    def __init__(self, ssm):
         super(AboutLamState, self).__init__(ssm)
 
     def on_enter(self):
@@ -324,7 +327,7 @@ class AboutLamState(State):
 Author: Kaldo
 Website: https://github.com/Kaldo/GW2_LiteAddonManager
 Installed version: {(self.ssm.LAM_VERSION or '-')}
-Available version: {(self.addon.AvailableVersion or '-')}
+Available version: {(self.ssm.AvailableLamVersion or '-')}
 
 GW2 LAM is an unofficial Lightweight Addon Manager for Guild Wars 2 using a console terminal. With only a few key presses you can check out and install any of the supported addons, get notified if there is a new version available and easily disable or uninstall them at any point."""
         self.ssm.console.print(Panel(text, expand=False))
