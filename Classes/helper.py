@@ -38,23 +38,37 @@ def download_file(url, path, enable_progress_bar = True):
     return True
 
 def get_github_latest_release_info(github_id):
-    api_url = "https://api.github.com/repos/% s/releases/latest" % (github_id)
-    with requests.get(api_url) as r:
-        if r.status_code == 200:
-            json_data = r.json()
-            return {
-                'version': json_data['tag_name'],
-                'file_name': json_data['assets'][0]['name']
-            }
+    json_data = get_github_json_data(github_id)
+    if json_data is not None:
+        response = {
+            'version': json_data['tag_name']
+        }
+        if 'assets' in json_data and len(json_data['assets']) > 0:
+            response['file_name'] = json_data['assets'][0]['name']
+
+        return response
+        # return {
+        #     'version': json_data['tag_name'],
+        #     'file_name': json_data['assets'][0]['name']
+        # }
     return None
 
 def get_github_version(github_id):
-    api_url = "https://api.github.com/repos/% s/releases/latest" % (github_id)
-    with requests.get(api_url) as r:
-        if r.status_code == 200:
-            json_data = r.json()
-            if 'tag_name' in json_data:
+    json_data = get_github_json_data(github_id)
+    if json_data is not None:
+        if 'tag_name' in json_data:
                 return json_data['tag_name']
+    return None
+
+def get_github_json_data(github_id):
+    api_url = "https://api.github.com/repos/% s/releases/latest" % (github_id)
+    headers = {
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'GW2-LAM'
+    }
+    with requests.get(api_url, headers=headers) as r:
+        if r.status_code == 200:
+            return r.json()
     return None
 
 def clear_screen():

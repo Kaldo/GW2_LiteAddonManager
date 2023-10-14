@@ -293,7 +293,10 @@ class SelfUpdaterState(State):
 
     def on_enter(self):
         self.ssm.console.print("Checking for new GW2 LAM updates...")
-        ri = hp.get_github_latest_release_info("Kaldo/GW2_LiteAddonManager")
+        try:
+            ri = hp.get_github_latest_release_info("Kaldo/GW2_LiteAddonManager")
+        except:
+            ri = None
         if ri is None:
             self.ssm.console.print("Could not fetch update info. Please consider manually checking if a new version is available.")
             self.ssm.VersionText = f"[red]{self.ssm.LAM_VERSION}[/] [red](update unavailable)[/]"
